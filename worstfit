@@ -1,0 +1,47 @@
+#include <stdio.h>
+#define MAX 30
+
+void main()
+{
+    int i,j,pn,bn,ps[MAX],bs[MAX],allocation[MAX];
+    printf("Enter the number of blocks: ");
+    scanf("%d",&bn);
+    printf("Enter the block sizes: ");
+    for(i=0;i<bn;i++)
+    {
+        scanf("%d",&bs[i]);
+    }
+    printf("Enter the number of processes: ");
+    scanf("%d",&pn);
+    printf("Enter the process sizes: ");
+    for(i=0;i<pn;i++)
+    {
+        scanf("%d",&ps[i]);
+        allocation[i]=-1;
+    }
+    for(i=0;i<pn;i++)
+    {
+        int worstindex=-1;
+        for(j=0;j<bn;j++)
+        {
+            if(bs[j]>=ps[i])
+            {
+                if(worstindex==-1 || bs[j]>bs[worstindex])
+                {
+                    worstindex=j;
+                }
+            }
+        }
+        allocation[i]=worstindex;
+        bs[worstindex]-=ps[i];
+    }
+    printf("Process no\tProcess size\tBlock no\n");
+    for(i=0;i<pn;i++)
+    {
+        printf("%d\t\t%d\t\t", i + 1, ps[i]);
+        if(allocation[i] == -1)
+            printf("Not allocated\n");
+        else
+            printf("%d\n", allocation[i] + 1);
+    }
+}
