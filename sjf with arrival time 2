@@ -1,73 +1,65 @@
 #include <stdio.h>
 #define max 30
 
-int main()
-{
+int main() {
     int i, j, n, temp;
-    int wt[max], bt[max], at[max], tat[max], p[max];
+    int wt[max], bt[max], at[max], tat[max], p[max], ct[max];
     float atat = 0, awt = 0;
 
     printf("Enter the number of processes: ");
     scanf("%d", &n);
 
     printf("Enter the burst time for each process:\n");
-    for(i = 0; i < n; i++)
-    {
+    for(i = 0; i < n; i++) {
         scanf("%d", &bt[i]);
         p[i] = i + 1;
     }
 
     printf("Enter the arrival time for each process:\n");
-    for(i = 0; i < n; i++)
-    {
+    for(i = 0; i < n; i++) {
         scanf("%d", &at[i]);
     }
 
-    for(i = 0; i < n - 1; i++)
-    {
-        for(j = i + 1; j < n; j++)
-        {
-            if(bt[i] > bt[j])
-            {
-                temp = bt[i];
-                bt[i] = bt[j];
-                bt[j] = temp;
+    int completed = 0, currentTime = 0, minIndex;
+    int completedProcesses[max] = {0};
 
-                temp = at[i];
-                at[i] = at[j];
-                at[j] = temp;
+    while(completed != n) {
+        int minBurst = 99999;
+        minIndex = -1;
 
-                temp = p[i];
-                p[i] = p[j];
-                p[j] = temp;
+        for(i = 0; i < n; i++) {
+            if(at[i] <= currentTime && completedProcesses[i] == 0 && bt[i] < minBurst) {
+                minBurst = bt[i];
+                minIndex = i;
             }
         }
+
+        if(minIndex == -1) {
+            currentTime++;
+            continue;
+        }
+
+        currentTime += bt[minIndex];
+        ct[minIndex] = currentTime;
+        tat[minIndex] = ct[minIndex] - at[minIndex];
+        wt[minIndex] = tat[minIndex] - bt[minIndex];
+
+        completedProcesses[minIndex] = 1;
+        completed++;
     }
 
     printf("Process\tBurst time\tArrival time\tWaiting time\tTurnaround time\n");
-    wt[0] = 0;
-    tat[0] = bt[0];
-    awt = 0;
-    atat = tat[0];
-
-    for(i = 1; i < n; i++)
-    {
-        wt[i] = tat[i - 1] - at[i];
-        if(wt[i] < 0) wt[i] = 0;
-        tat[i] = wt[i] + bt[i];
+    for(i = 0; i < n; i++) {
+        printf("%d\t%d\t\t%d\t\t%d\t\t%d\n", p[i], bt[i], at[i], wt[i], tat[i]);
         awt += wt[i];
         atat += tat[i];
-    }
-
-    for(i = 0; i < n; i++)
-    {
-        printf("%d\t%d\t\t%d\t\t%d\t\t%d\n", p[i], bt[i], at[i], wt[i], tat[i]);
     }
 
     awt = awt / n;
     atat = atat / n;
     printf("Average waiting time is: %f\n", awt);
-    printf("Average turnaround time is: %f", atat);
+    printf("Average turnaround time is: %f\n", atat);
 
     return 0;
 }
+
